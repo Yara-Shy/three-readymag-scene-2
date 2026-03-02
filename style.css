@@ -1,36 +1,26 @@
-
-body, html, #app {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-}
-
-body {
-  touch-action: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: none;
-}
-
-#canvas {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  overflow: hidden;
-  filter: invert(1);
-}
-
 p {
   position: relative;
   z-index: 10;
   font-size: clamp(50px, 15vw, 250px);
-  color: transparent;
-  -webkit-text-stroke: 2px #7D7D7D;
   font-family: "neue-haas-grotesk-display", sans-serif;
   font-weight: 600;
   font-style: normal;
   letter-spacing: -0.02em;
+
+  /* glass */
+  color: transparent;
+  background: linear-gradient(
+    -75deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.22) 40%,
+    rgba(255,255,255,0.10) 60%,
+    rgba(255,255,255,0.04) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow:
+    0  -0.05em  0.05em rgba(0,0,0,0.25),
+    0   0.05em  0.04em rgba(255,255,255,0.50),
+    0   0       0.10em rgba(255,255,255,0.15);
+  -webkit-text-stroke: 1px rgba(255,255,255,0.38);
 }
