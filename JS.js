@@ -372,6 +372,7 @@ let scrollCueGone = false, heroRevealed = false, explosionFired = false;
 let lastExplosionAt = -10;
 // heroRevealed тепер реактивний — відображає поточний стан, а не "чи спрацював колись"
 let sphereAlphaSmooth = 1;
+let sphereSpiralProgressSmooth = 0;
 
 function computeCameraTarget() {
   if (!introReady) return;
@@ -610,14 +611,17 @@ const scale = baseScale * smoothHover[i];
   const breathe = 1 + Math.sin(t * 1.5) * 0.05;
   let sphereTargetScale = breathe;
   let sphereTargetAlpha = 1;
+  const rawSpiralProgress = spiralIn ? Math.max(0, spiralP - 0.05) : 0;
+  sphereSpiralProgressSmooth = lerpDt(sphereSpiralProgressSmooth, rawSpiralProgress, 0.09, dt);
 
   if (spiralIn) {
-    const adjustedP = Math.max(0, spiralP - 0.05);
-    sphereTargetScale = breathe * (1 + adjustedP * (isMobile ? 12 : 25));
-    sphereTargetAlpha = Math.max(0, 1 - adjustedP * 5);
+    sphereTargetScale = breathe * (1 + sphereSpiralProgressSmooth * (isMobile ? 10 : 25));
+    sphereTargetAlpha = Math.max(0, 1 - sphereSpiralProgressSmooth * 5);
   } else if (spiralDone) {
     sphereTargetAlpha = 0;
     sphereTargetScale = breathe * (isMobile ? 9 : 15);
+  } else {
+    sphereSpiralProgressSmooth = lerpDt(sphereSpiralProgressSmooth, 0, 0.08, dt);
   }
 
   const currentScale = sphere.scale.x;
