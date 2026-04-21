@@ -545,7 +545,7 @@ const scale = baseScale * smoothHover[i];
         cards[i].style.filter       = filt;
         cards[i].style.opacity      = opacity.toFixed(3);
         cards[i].style.zIndex       = zIdx;
-        const canTap = window.innerWidth <= 768 ? facing > .12 : facing > .4;
+        const canTap = window.innerWidth <= 768 ? i === frontIdx : facing > .4;
         cards[i].style.pointerEvents = canTap ? 'auto' : 'none';
 
         if (photos[i]) {
@@ -868,7 +868,7 @@ document.addEventListener('pointerup', e => {
   e.preventDefault();
   lastTouchOpenAt = performance.now();
   openZoom(parseInt(card.dataset.idx));
-}, { passive: true });
+}, { passive: false });
 
 document.addEventListener('click', e => {
   const card = e.target.closest('.card');
