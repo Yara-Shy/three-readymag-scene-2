@@ -445,8 +445,6 @@ if (shouldShowHero !== heroRevealed) {
    ───────────────────────────────────────────── */
 const clock = new THREE.Clock();
 let lastTime = 0;
-let frontCardLockUntil = 0;
-let forcedFrontCardIdx = -1;
 
 // Spiral state — живе тут, оновлюється в RAF
 const spiral = (() => {
@@ -518,11 +516,6 @@ cards.forEach((card, i) => {
 
       let frontIdx = 0, maxF = 0;
       poses.forEach((p, i) => { if (p.facing > maxF) { maxF = p.facing; frontIdx = i; } });
-      if (window.innerWidth <= 768 && performance.now() < frontCardLockUntil && forcedFrontCardIdx >= 0) {
-        frontIdx = forcedFrontCardIdx;
-      } else {
-        forcedFrontCardIdx = frontIdx;
-      }
       if (frontIdx !== prevFrontIdx) {
         if (prevFrontIdx >= 0) cards[prevFrontIdx].classList.remove('is-front');
         cards[frontIdx].classList.add('is-front');
@@ -854,73 +847,26 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeZoom();
 });
 
-function getZoomCardTarget(target) {
-  if (!target) return null;
-  const hit = target.closest('.card-hit');
-  if (hit) {
-    const hitCard = hit.closest('.card');
-    return hitCard?.classList.contains('is-front') ? hitCard : null;
-  }
-  const directCard = target.closest('.card');
-  if (directCard) return directCard;
-  const actionEl = target.closest('.meta h3, .meta .cta-link');
-  return actionEl ? actionEl.closest('.card') : null;
-}
-
 document.querySelectorAll('#spiral .card').forEach(card => {
-  if (card.querySelector('.card-hit')) return;
-  const hit = document.createElement('button');
-  hit.type = 'button';
-  hit.className = 'card-hit';
-  hit.setAttribute('aria-label', 'Open project');
-  hit.addEventListener('click', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    const idx = Number.parseInt(card.dataset.idx, 10);
-    if (!Number.isNaN(idx)) openZoom(idx);
-  });
-  card.appendChild(hit);
+  let hit = card.querySelector('.card-hit');
+  if (!hit) {
+    hit = document.createElement('div');
+    hit.className = 'card-hit';
+    hit.setAttribute('role', 'button');
+    hit.setAttribute('aria-label', 'Open project');
+    card.appendChild(hit);
+  }
 });
 
-let touchStartX = 0, touchStartY = 0;
-let touchActive = false;
-let lastTouchOpenAt = 0;
-
-document.addEventListener('pointerdown', e => {
-  if (e.pointerType !== 'touch') return;
-  touchActive = true;
-  touchStartX = e.clientX;
-  touchStartY = e.clientY;
-  const hitCard = e.target.closest('.card-hit')?.closest('.card');
-  if (hitCard) {
-    const idx = Number.parseInt(hitCard.dataset.idx, 10);
-    if (!Number.isNaN(idx)) {
-      forcedFrontCardIdx = idx;
-      frontCardLockUntil = performance.now() + 220;
-    }
-  }
-}, { passive: true });
-
-document.addEventListener('pointerup', e => {
-  if (e.pointerType !== 'touch' || !touchActive) return;
-  touchActive = false;
-  const card = getZoomCardTarget(e.target);
+document.getElementById('spiralTrack')?.addEventListener('click', e => {
+  const trigger = e.target.closest('.card-hit, .meta h3, .meta .cta-link, .card');
+  if (!trigger) return;
+  const card = trigger.closest('.card');
   if (!card) return;
-  const dx = Math.abs(e.clientX - touchStartX);
-  const dy = Math.abs(e.clientY - touchStartY);
-  if (dx > 14 || dy > 14) return; // свайп/скрол - не відкриваємо
+  if (isMobile && !card.classList.contains('is-front')) return;
   e.preventDefault();
-  lastTouchOpenAt = performance.now();
-  openZoom(parseInt(card.dataset.idx, 10));
-}, { passive: false });
-
-document.addEventListener('click', e => {
-  const card = getZoomCardTarget(e.target);
-  if (!card) return;
-  // Ignore synthetic click right after touch-open on mobile.
-  if (isMobile && performance.now() - lastTouchOpenAt < 500) return;
-  e.preventDefault();
-  openZoom(parseInt(card.dataset.idx, 10));
+  const idx = Number.parseInt(card.dataset.idx, 10);
+  if (!Number.isNaN(idx)) openZoom(idx);
 });
 
 document.querySelectorAll('.tdot').forEach(dot => dot.addEventListener('click', () => applyTheme(dot.dataset.t)));
