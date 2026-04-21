@@ -445,6 +445,8 @@ if (shouldShowHero !== heroRevealed) {
    ───────────────────────────────────────────── */
 const clock = new THREE.Clock();
 let lastTime = 0;
+let frontCardLockUntil = 0;
+let forcedFrontCardIdx = -1;
 
 // Spiral state — живе тут, оновлюється в RAF
 const spiral = (() => {
@@ -516,6 +518,11 @@ cards.forEach((card, i) => {
 
       let frontIdx = 0, maxF = 0;
       poses.forEach((p, i) => { if (p.facing > maxF) { maxF = p.facing; frontIdx = i; } });
+      if (window.innerWidth <= 768 && performance.now() < frontCardLockUntil && forcedFrontCardIdx >= 0) {
+        frontIdx = forcedFrontCardIdx;
+      } else {
+        forcedFrontCardIdx = frontIdx;
+      }
       if (frontIdx !== prevFrontIdx) {
         if (prevFrontIdx >= 0) cards[prevFrontIdx].classList.remove('is-front');
         cards[frontIdx].classList.add('is-front');
@@ -849,11 +856,25 @@ document.addEventListener('keydown', e => {
 
 function getZoomCardTarget(target) {
   if (!target) return null;
+  const hit = target.closest('.card-hit');
+  if (hit) {
+    const hitCard = hit.closest('.card');
+    return hitCard?.classList.contains('is-front') ? hitCard : null;
+  }
   const directCard = target.closest('.card');
   if (directCard) return directCard;
   const actionEl = target.closest('.meta h3, .meta .cta-link');
   return actionEl ? actionEl.closest('.card') : null;
 }
+
+document.querySelectorAll('#spiral .card').forEach(card => {
+  if (card.querySelector('.card-hit')) return;
+  const hit = document.createElement('button');
+  hit.type = 'button';
+  hit.className = 'card-hit';
+  hit.setAttribute('aria-label', 'Open project');
+  card.appendChild(hit);
+});
 
 let touchStartX = 0, touchStartY = 0;
 let touchActive = false;
@@ -864,6 +885,14 @@ document.addEventListener('pointerdown', e => {
   touchActive = true;
   touchStartX = e.clientX;
   touchStartY = e.clientY;
+  const hitCard = e.target.closest('.card-hit')?.closest('.card');
+  if (hitCard) {
+    const idx = Number.parseInt(hitCard.dataset.idx, 10);
+    if (!Number.isNaN(idx)) {
+      forcedFrontCardIdx = idx;
+      frontCardLockUntil = performance.now() + 220;
+    }
+  }
 }, { passive: true });
 
 document.addEventListener('pointerup', e => {
