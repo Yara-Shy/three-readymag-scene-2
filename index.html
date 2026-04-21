@@ -1,15 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://use.typekit.net/yjp7kef.css" />
-  <link rel="stylesheet" href="style.css" />
-  <title></title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Yaroslava Shylyk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap"/>
+<link rel="stylesheet" href="https://use.typekit.net/phb7xgn.css">
+<link rel="stylesheet" href="STYLES.css">
+<script src="https://cdn.jsdelivr.net/npm/embla-carousel@8.5.2/embla-carousel.umd.js"></script>
 </head>
 <body>
-  <canvas id="canvas"></canvas>
-  <p>Yara Shylyk</p>
-  <script type="module" src="script.js"></script>
+
+<div id="loader">
+  <div class="loader-logo">HI, I'M <em>YARA</em></div>
+  <div class="loader-track"><div class="loader-bar" id="lbar"></div></div>
+  <div class="loader-pct" id="lpct">0%</div>
+</div>
+
+<div id="cur"></div><div id="cur-ring"></div>
+<div class="grain"></div><div class="vignette"></div>
+<canvas id="bg-canvas"></canvas>
+<div id="scroll-cue"><div class="cue-text">scroll</div><div class="cue-arrow"></div></div>
+
+<nav id="main-nav">
+  <a href="#s-home" class="logo">HI, I'M <em>YARA</em></a>
+  <ul class="nav-links">
+    <li><a href="#s-home">Home</a></li>
+    <li><a href="#s-work">Work</a></li>
+    <li><a href="#s-about">About</a></li>
+    <li><a href="#s-contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div id="s-home-wrapper">
+<section id="s-home">
+  <div class="hero-left hero-reveal" style="transition-delay:.05s">
+    <h1 class="hero-name">
+      <span class="line">Creative</span>
+      <span class="line hero-reveal" style="transition-delay:.2s;font-style:italic;color:var(--c2);">Tech ❤︎⁠</span>
+
+    </h1>
+    <p class="hero-sub">I am specializing in Unreal Engine, generative graphics, 3D animation, and camera-tracked setups.</p>
+    <div class="cta-row">
+      <a href="#s-work" class="btn btn-solid">View Work</a>
+      <a href="#s-contact" class="btn btn-ghost">Let's Talk</a>
+    </div>
+  </div>
+</section>
+</div>
+
+<div id="s-work">
+<div class="spiral-section" id="spiral">
+  <div class="spiral-header"></div>
+  <div class="sticky"><div class="stage"><div class="spiral" id="spiralTrack">
+
+    <div class="card-photo" id="cp-0"><video autoplay muted loop playsinline preload="metadata" src="https://res.cloudinary.com/dtzuydpci/video/upload/v1774359760/Doyou_kd0xsh.mp4"></video></div>
+    <div class="card-photo" id="cp-1"><video autoplay muted loop playsinline preload="metadata" src="https://res.cloudinary.com/dtzuydpci/video/upload/v1774533662/Teddy_Sort_Cut_jrkqu6.mp4"></video></div>
+    <div class="card-photo" id="cp-2"><video autoplay muted loop playsinline preload="metadata" src="https://res.cloudinary.com/dtzuydpci/video/upload/v1774457995/Rohschnitt_01_hvdmcb.mp4"></video></div>
+    <div class="card-photo" id="cp-3"><video autoplay muted loop playsinline preload="metadata" src="https://res.cloudinary.com/dtzuydpci/video/upload/v1774791413/Spinnen_Final_V1_3_warebk.mp4"></video></div>
+    <div class="card-photo" id="cp-4"><video autoplay muted loop playsinline preload="metadata" src="https://res.cloudinary.com/dtzuydpci/video/upload/v1774364599/Ego-Interactive_exhibitions_03_uwlahp.mp4"></video></div>
+    <div class="card-photo" id="cp-5"><video autoplay muted loop playsinline preload="metadata" src="https://res.cloudinary.com/dtzuydpci/video/upload/v1774624717/Dream_Of_War_Short1_csshfe.mp4"></video></div>
+
+    <a class="card" href="#" data-idx="0">
+      <div class="meta">
+        <div class="meta-tags"><span class="meta-tag">Stage Visuals</span><span class="meta-tag">'Lighting Integration</span><span class="meta-tag">Art Direction</span></div>
+        <div class="subtitle">Music Video · 2024</div>
+        <div class="meta-bottom-row">
+            <h3>Do you'</h3>
+            <span class="cta-link">→</span></div>
+            <div class="desc">Directed by Olivia Menezes</div>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-idx="1">
+      <div class="meta">
+        <div class="meta-tags"><span class="meta-tag">Virtual Production</span><span class="meta-tag">3D Environments</span><span class="meta-tag">3D Animation</span></div>
+        <div class="subtitle">Short Movie · 2026</div>
+        <div class="meta-bottom-row">
+            <h3>Nightfall</h3>
+            <span class="cta-link">→</span></div>
+        <div class="desc">Directed by Natascha Vavrina</div>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-idx="2">
+      <div class="meta">
+        <div class="meta-tags"><span class="meta-tag">Virtual Production</span><span class="meta-tag">VFX</span><span class="meta-tag">3D Environments</span></div>
+        <div class="subtitle">Short Movie · 2025</div>
+        <div class="meta-bottom-row">
+            <h3>Rohschnitt</h3>
+            <span class="cta-link">→</span></div>
+        <div class="desc">Directed by Leon Wolf and Konstantin Züllich</div>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-idx="3">
+      <div class="meta">
+        <div class="meta-tags"><span class="meta-tag">Audio-Reactive Visuals</span><span class="meta-tag">Signal Routing</span><span class="meta-tag">Art Direction</span></div>
+        <div class="subtitle">Performance · 2025</div>
+        <div class="meta-bottom-row">
+            <h3>Spinnen</h3>
+            <span class="cta-link">→</span></div>
+        <div class="desc">Composed by Luis Escobar</div>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-idx="4">
+      <div class="meta">
+        <div class="meta-tags"><span class="meta-tag">Live Video Processing</span><span class="meta-tag">Signal Routing</span><span class="meta-tag">Camera Tracking</span></div>
+        <div class="subtitle">Interactive Exhibition · 2025</div>
+        <div class="meta-bottom-row">
+            <h3>Ego</h3>
+            <span class="cta-link">→</span></div>
+        <div class="desc">Exhibited at Immersive Art Space</div>
+      </div>
+    </a>
+
+    <a class="card" href="#" data-idx="5">
+      <div class="meta">
+        <div class="meta-tags"><span class="meta-tag">3D Environments</span><span class="meta-tag">3D Animation</span><span class="meta-tag">Game Development</span></div>
+        <div class="subtitle">VR Game · 2022</div>
+        <div class="meta-bottom-row">
+            <h3>Dream of war</h3>
+            <span class="cta-link">→</span></div>
+        <div class="desc">Exhibited at Anifilm and ARTSEMESTR</div>
+      </div>
+    </a>
+    
+
+  </div></div></div>
+</div>
+<div class="more-carousel-wrap">
+    <div class="embla">
+      <div class="embla__viewport">
+        <div class="more-carousel embla__container"></div>
+      </div>
+      <div class="embla__controls">
+        <button class="mc-arrow mc-prev embla__btn embla__btn--prev">←</button>
+        <div class="embla__dots"></div>
+        <button class="mc-arrow mc-next embla__btn embla__btn--next">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="scroll-page" id="s-about">
+  <div class="about-grid">
+    <div>
+      <div class="about-big">About &amp;<br><em>Skills</em></div>
+    </div>
+    <div class="about-body">
+      <p>Hey! <strong>I'm Yara</strong>. I am a visual technologist <strong>based in Switzerland</strong>.</p> <p>I have <strong>experience</strong> building and operating 3D environments for <strong>film & virtual production</strong>, designing audio-reactive visual systems for <strong>live stages</strong>, and <strong>interactive installations</strong>.</p>
+    </div>
+    <div class="tags"><span class="tag">Unreal Engine</span><span class="tag">TouchDesigner</span><span class="tag">Blender</span><span class="tag">Adobe Suite</span><span class="tag">3D Environments</span><span class="tag">3D Animation</span><span class="tag">Camera Tracking</span><span class="tag">Motion Capture</span><span class="tag">Signal Routing</span><span class="tag">Technical Setup</span></div>
+  </div>
+  <div class="eyebrow"></div>
+
+</section>
+
+
+<section class="scroll-page" id="s-contact">
+  <div class="contact-layout">
+    <div class="contact-text">
+      <div class="contact-big">Let's build<br><span class="ca">something!</span></div>
+      <div class="contact-links">
+        <button class="cl" id="copyEmail"><span class="cl-arr">→</span><span id="emailText">yaroslava.shylyk@outlook.com</span></button>
+      </div>
+    </div>
+    <div class="contact-photo">
+      <img src="https://res.cloudinary.com/dtzuydpci/image/upload/v1775561874/copy_of_yaroslava_shylyk_xha5f7_e911fb.jpg" alt="Yara" />
+    </div>
+  </div>
+</section>
+
+
+<div id="zoom-overlay" class="zoom-overlay">
+  <div class="zoom-inner">
+    <button class="zoom-close" id="zoom-close">✕</button>
+  <div class="zoom-left">
+    <div class="zoom-grid" id="zoom-grid"></div>
+  </div>
+  <div class="zoom-right">
+    <div class="zoom-tags" id="zoom-tags"></div>
+    <h2 class="zoom-title" id="zoom-title"></h2>
+    <div class="zoom-subtitle" id="zoom-subtitle"></div>
+    <p class="zoom-desc" id="zoom-desc"></p>
+    <div class="zoom-meta" id="zoom-meta"></div>
+  </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span>© 2025 Yaroslava Shylyk</span>
+  <span>Visual Technologist · Zurich</span>
+</footer>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"}}
+</script>
+<script type="module" src="JS.js"></script>
 </body>
 </html>
