@@ -435,7 +435,7 @@ const spiral = (() => {
   const N = cards.length;
   const isMob = window.innerWidth <= 768;
   const S = {
-    R: isMob ? 320 : 640, pitch: isMob ? 200 : 320, zOffset: isMob ? -160 : -260, faceStrength: isMob ? 32 : 48, tiltX: 0,
+    R: isMob ? 280 : 640, pitch: isMob ? 250 : 320, zOffset: isMob ? -160 : -260, faceStrength: isMob ? 32 : 48, tiltX: 0,
     backBlurMax: 12, backOpacityMin: 0.22, frontOpacityMin: 0.98,
     backThreshold: 0, cameraLerp: 0.1, focusSharpness: 12.0, scrollLerp: 0.08,
   };
@@ -526,7 +526,7 @@ const scale = baseScale * smoothHover[i];
         cards[i].style.filter       = filt;
         cards[i].style.opacity      = opacity.toFixed(3);
         cards[i].style.zIndex       = zIdx;
-        const canTap = window.innerWidth <= 768 ? facing > .22 : facing > .4;
+        const canTap = window.innerWidth <= 768 ? facing > .12 : facing > .4;
         cards[i].style.pointerEvents = canTap ? 'auto' : 'none';
 
         if (photos[i]) {
@@ -821,24 +821,31 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeZoom();
 });
 let touchStartX = 0, touchStartY = 0;
-let touchMoved = false;
+let touchActive = false;
 
-document.addEventListener('touchstart', e => {
-  touchMoved = false;
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch') return;
+  touchActive = true;
+  touchStartX = e.clientX;
+  touchStartY = e.clientY;
 }, { passive: true });
 
-document.addEventListener('touchend', e => {
-  const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
-  const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-  touchMoved = dx > 8 || dy > 8;
+document.addEventListener('pointerup', e => {
+  if (e.pointerType !== 'touch' || !touchActive) return;
+  touchActive = false;
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const dx = Math.abs(e.clientX - touchStartX);
+  const dy = Math.abs(e.clientY - touchStartY);
+  if (dx > 14 || dy > 14) return; // свайп/скрол - не відкриваємо
+  e.preventDefault();
+  openZoom(parseInt(card.dataset.idx));
 }, { passive: true });
 
 document.addEventListener('click', e => {
+  if (isMobile) return;
   const card = e.target.closest('.card');
   if (!card) return;
-  if (isMobile && touchMoved) return;
   e.preventDefault();
   openZoom(parseInt(card.dataset.idx));
 });
