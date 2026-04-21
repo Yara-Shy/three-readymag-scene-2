@@ -188,7 +188,7 @@ nav * { pointer-events: all; }
 .spiral-section { height: 600vh; position: relative; z-index: 10; }
 
 @media (max-width: 768px) {
-  .spiral-section { height: 260vh; }
+  .spiral-section { height: 200vh; }
 }
 .spiral-header { position: absolute; top: 0; left: 2.8rem; padding-top: 8rem; z-index: 20; }
 .sticky { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; overflow: hidden; background: transparent; }
