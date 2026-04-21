@@ -106,13 +106,18 @@ const loaderTick = setInterval(() => {
 /* ─────────────────────────────────────────────
    CONFIG
    ───────────────────────────────────────────── */
-const IS_LOW_END = navigator.hardwareConcurrency <= 2;
+const IS_MOBILE_DEVICE =
+  /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ||
+  window.matchMedia('(pointer: coarse)').matches;
+const CPU_CORES = navigator.hardwareConcurrency || 4;
+const DEVICE_MEMORY_GB = navigator.deviceMemory || 4;
+const IS_LOW_END = IS_MOBILE_DEVICE || CPU_CORES <= 4 || DEVICE_MEMORY_GB <= 4;
 const CFG = {
-  sphere : { count: IS_LOW_END ? 10_000 : 18_000, radius: 5 },
-  rings  : { count: IS_LOW_END ? 4 : 5, pointsPerRing: IS_LOW_END ? 1_200 : 2_000, radius: 7.5, thickness: 0.6 },
-  stars  : { count: IS_LOW_END ? 3_000 : 6_000, spread: 50_000 },
-  bloom  : { strength: IS_LOW_END ? 0.8 : 1.2, threshold: 0, radius: 0.5 },
-  dpr    : Math.min(devicePixelRatio, 2),
+  sphere : { count: IS_MOBILE_DEVICE ? 7_000 : (IS_LOW_END ? 10_000 : 18_000), radius: 5 },
+  rings  : { count: IS_MOBILE_DEVICE ? 3 : (IS_LOW_END ? 4 : 5), pointsPerRing: IS_MOBILE_DEVICE ? 900 : (IS_LOW_END ? 1_200 : 2_000), radius: 7.5, thickness: 0.6 },
+  stars  : { count: IS_MOBILE_DEVICE ? 2_000 : (IS_LOW_END ? 3_000 : 6_000), spread: 50_000 },
+  bloom  : { strength: IS_MOBILE_DEVICE ? 0.55 : (IS_LOW_END ? 0.8 : 1.2), threshold: 0, radius: IS_MOBILE_DEVICE ? 0.35 : 0.5 },
+  dpr    : Math.min(devicePixelRatio, IS_MOBILE_DEVICE ? 1.25 : 2),
   explode: { duration: 2_000 },
 };
 const CAM = { FAR_Z: 28, NEAR_Z: 15, SPIRAL_Z: 3.5, Y: 5, HERO_X: -10 };
@@ -270,8 +275,11 @@ Object.assign(controls, {
   enableDamping: true, dampingFactor: .04, rotateSpeed: .6,
   minDistance: 2, maxDistance: 60, enableZoom: false,
 });
+if (IS_MOBILE_DEVICE) controls.enabled = false;
 
-const bloomRes = IS_LOW_END
+const bloomRes = IS_MOBILE_DEVICE
+  ? new THREE.Vector2(innerWidth*.35, innerHeight*.35)
+  : IS_LOW_END
   ? new THREE.Vector2(innerWidth*.5, innerHeight*.5)
   : new THREE.Vector2(innerWidth, innerHeight);
 const composer  = new EffectComposer(renderer);
@@ -295,7 +303,7 @@ window.addEventListener('resize', () => {
   composer.setSize(innerWidth, innerHeight);
 }, { passive: true });
 
-const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.matchMedia('(pointer: coarse)').matches;
+const isMobile = IS_MOBILE_DEVICE;
 
 if (!isMobile) {
   window.addEventListener('mousemove', e => {
@@ -588,11 +596,11 @@ const scale = baseScale * smoothHover[i];
 
   if (spiralIn) {
     const adjustedP = Math.max(0, spiralP - 0.05);
-    sphereTargetScale = breathe * (1 + adjustedP * 25);
+    sphereTargetScale = breathe * (1 + adjustedP * (isMobile ? 12 : 25));
     sphereTargetAlpha = Math.max(0, 1 - adjustedP * 5);
   } else if (spiralDone) {
     sphereTargetAlpha = 0;
-    sphereTargetScale = breathe * 15;
+    sphereTargetScale = breathe * (isMobile ? 9 : 15);
   }
 
   const currentScale = sphere.scale.x;
