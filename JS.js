@@ -843,6 +843,30 @@ function closeZoom() {
   zoomOverlay.scrollTop = 0;
 }
 
+function configureAutoplayVideo(video) {
+  if (!video) return;
+  video.muted = true;
+  video.defaultMuted = true;
+  video.autoplay = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.controls = false;
+  video.disablePictureInPicture = true;
+  video.setAttribute('muted', '');
+  video.setAttribute('autoplay', '');
+  video.setAttribute('loop', '');
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
+  video.setAttribute('controlsList', 'nodownload nofullscreen noplaybackrate');
+}
+
+function playIfPossible(video) {
+  if (!video) return;
+  configureAutoplayVideo(video);
+  const p = video.play();
+  if (p && typeof p.catch === 'function') p.catch(() => {});
+}
+
 document.getElementById('zoom-grid').addEventListener('click', e => {
   const target = e.target.closest('img, video');
   if (!target || target === e.currentTarget.children[0] || e.currentTarget.classList.contains('single-image')) return;
@@ -871,6 +895,12 @@ document.querySelectorAll('#spiral .card').forEach(card => {
   });
 
   card.dataset.zoomBound = '1';
+});
+
+document.querySelectorAll('.card-photo video, .mc-img video').forEach(video => {
+  configureAutoplayVideo(video);
+  video.addEventListener('loadedmetadata', () => playIfPossible(video), { once: true });
+  playIfPossible(video);
 });
 
 const spiralTrackEl = document.getElementById('spiralTrack');
