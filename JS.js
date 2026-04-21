@@ -324,9 +324,17 @@ const scrollState = {
   spiralDone: false,
   scrollY:    0,
 };
+let stableVh = window.innerHeight;
+
+function updateStableViewportHeight(force = false) {
+  const next = window.innerHeight;
+  // Mobile browser chrome can slightly change innerHeight during scroll.
+  // Ignore tiny changes to keep scroll progress stable and avoid jitter.
+  if (force || Math.abs(next - stableVh) > 120) stableVh = next;
+}
 
 function updateScrollState() {
-  const vh = window.innerHeight;
+  const vh = stableVh;
   scrollState.scrollY = window.scrollY;
 
   const wrapRect   = getCachedRect(document.getElementById('s-home-wrapper'));
@@ -350,6 +358,8 @@ function updateScrollState() {
 }
 
 window.addEventListener('scroll', updateScrollState, { passive: true });
+window.addEventListener('resize', () => updateStableViewportHeight(false), { passive: true });
+window.addEventListener('orientationchange', () => updateStableViewportHeight(true), { passive: true });
 
 
 /* ─────────────────────────────────────────────
@@ -392,7 +402,9 @@ function computeCameraTarget() {
   camTargetZ = CAM.FAR_Z + (CAM.NEAR_Z - CAM.FAR_Z) * e;
   camTargetX = -6 * e;
 
-  const shouldShowHero = wrapP >= 0.58;
+  const showAt = 0.60;
+  const hideAt = 0.52;
+  const shouldShowHero = heroRevealed ? wrapP >= hideAt : wrapP >= showAt;
 
 if (shouldShowHero !== heroRevealed) {
   heroRevealed = shouldShowHero;
@@ -422,7 +434,6 @@ if (shouldShowHero !== heroRevealed) {
     camTargetZ = lerp(CAM.NEAR_Z, CAM.SPIRAL_Z, preZoomE);
   }
 }
-
 window.addEventListener('scroll', computeCameraTarget, { passive: true });
 
 
@@ -556,6 +567,10 @@ const scale = baseScale * smoothHover[i];
   const t  = clock.getElapsedTime();
   const dt = Math.min(t - lastTime, 0.1); // cap dt щоб не було стрибка після blur вкладки
   lastTime = t;
+
+  // Keep camera/hero transitions stable by deriving state in RAF too.
+  updateScrollState();
+  computeCameraTarget();
 
   /* ── Cursor  ── */
   if (!isMobile) {
