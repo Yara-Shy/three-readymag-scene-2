@@ -660,6 +660,22 @@ nav * { pointer-events: all; }
 .mc-card:hover .mc-img img,
 .mc-card:hover .mc-img video { transform: scale(1.04); }
 
+@media (hover: none), (pointer: coarse) {
+  .card:hover::after {
+    border-color: rgba(0, 229, 255, 0);
+    box-shadow: none;
+  }
+  .mc-card:hover {
+    border-color: rgba(0, 229, 255, 0.15);
+    box-shadow: none;
+    transform: none;
+  }
+  .mc-card:hover .mc-img img,
+  .mc-card:hover .mc-img video {
+    transform: none;
+  }
+}
+
 .mc-meta {
   position: absolute;
   left: 0; right: 0; bottom: 0;
