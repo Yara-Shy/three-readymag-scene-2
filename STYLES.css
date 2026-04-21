@@ -270,6 +270,7 @@ nav * { pointer-events: all; }
 .meta .subtitle { font-size: .62rem; letter-spacing: .08em; color: rgba(255,255,255,.5); margin-bottom: .2rem; }
 .meta .cta-link { font-size: 3rem; color: var(--c2); flex-shrink: 0;  margin-right: 1rem; transform: translateY(1rem);  }
 .meta .desc { margin-left: .2rem; font-size: .8rem; line-height: 1.75;  margin-top: .1rem; color: rgba(255,255,255,.45);  }
+.meta h3, .meta .cta-link { pointer-events: auto; touch-action: manipulation; }
 @media (max-width: 768px) {
   #s-home {
     padding-left: 1.4rem;
@@ -298,7 +299,7 @@ nav * { pointer-events: all; }
   .meta h3 { font-size: clamp(1.6rem, 4vw, 1.3rem); }
   .meta .subtitle { font-size: .70rem; }
   .meta .desc { font-size: .70rem; line-height: 1 ; margin-top: .1rem;  }
-  .meta .cta-link { font-size: 3rem; margin-top: .1rem; }
+  .meta .cta-link { font-size: 3rem; margin-top: .1rem; padding: .2rem .3rem; }
   .meta-tag { font-size: .49rem; padding: .15rem .4rem; }
 }
 
