@@ -445,12 +445,24 @@ if (shouldShowHero !== heroRevealed) {
    ───────────────────────────────────────────── */
 const clock = new THREE.Clock();
 let lastTime = 0;
+const USE_SPIRAL_LAYOUT = false;
 
 // Spiral state — живе тут, оновлюється в RAF
 const spiral = (() => {
   const section = document.getElementById('spiral');
   const cards   = Array.from(section.querySelectorAll('.card'));
   const photos  = Array.from(section.querySelectorAll('.card-photo'));
+  if (!USE_SPIRAL_LAYOUT) {
+    const track = document.getElementById('spiralTrack');
+    track?.classList.add('linear-list');
+    cards.forEach((card, i) => {
+      const media = photos[i];
+      if (media && media.parentElement !== card) {
+        card.prepend(media);
+      }
+    });
+    return { tick() {} };
+  }
   const N = cards.length;
   const isMob = window.innerWidth <= 768;
   const S = {
@@ -661,7 +673,7 @@ const scale = baseScale * smoothHover[i];
   rings.rotation.y     += 0.0005;
 
   /* ── Spiral CSS  ── */
-  spiral.tick(dt);
+  if (USE_SPIRAL_LAYOUT) spiral.tick(dt);
 
   controls.update();
   composer.render();
@@ -892,33 +904,6 @@ spiralTrackEl?.addEventListener('pointerup', e => {
   tapCard = null;
 }, { passive: false });
 
-// TEMP mobile diagnostics: helps identify which layer receives taps.
-if (isMobile) {
-  document.addEventListener('pointerup', e => {
-    if (e.pointerType !== 'touch') return;
-    const topStack = document.elementsFromPoint(e.clientX, e.clientY)
-      .slice(0, 6)
-      .map(el => {
-        const id = el.id ? `#${el.id}` : '';
-        const cls = el.className && typeof el.className === 'string'
-          ? `.${el.className.trim().replace(/\s+/g, '.')}`
-          : '';
-        return `${el.tagName}${id}${cls}`;
-      });
-    const t = e.target;
-    const targetName = t
-      ? `${t.tagName}${t.id ? `#${t.id}` : ''}${t.className && typeof t.className === 'string' ? `.${t.className.trim().replace(/\s+/g, '.')}` : ''}`
-      : 'null';
-    console.log('[spiral-tap-debug]', {
-      x: e.clientX,
-      y: e.clientY,
-      target: targetName,
-      nearestCard: !!e.target.closest('.card'),
-      nearestSpiralCard: !!e.target.closest('#spiral .card'),
-      topStack,
-    });
-  }, { passive: true });
-}
 
 document.querySelectorAll('.tdot').forEach(dot => dot.addEventListener('click', () => applyTheme(dot.dataset.t)));
 
