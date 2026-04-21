@@ -849,12 +849,34 @@ document.addEventListener('keydown', e => {
 
 document.querySelectorAll('#spiral .card .card-hit').forEach(el => el.remove());
 
-document.getElementById('spiralTrack')?.addEventListener('click', e => {
-  const card = e.target.closest('.card');
-  if (!card) return;
-  e.preventDefault();
-  const idx = Number.parseInt(card.dataset.idx, 10);
-  if (!Number.isNaN(idx)) openZoom(idx);
+document.querySelectorAll('#spiral .card').forEach(card => {
+  if (card.dataset.zoomBound === '1') return;
+  let startX = 0;
+  let startY = 0;
+
+  card.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'touch') return;
+    startX = e.clientX;
+    startY = e.clientY;
+  }, { passive: true });
+
+  card.addEventListener('pointerup', e => {
+    if (e.pointerType !== 'touch') return;
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+    if (dx > 14 || dy > 14) return; // scroll/drag gesture
+    e.preventDefault();
+    const idx = Number.parseInt(card.dataset.idx, 10);
+    if (!Number.isNaN(idx)) openZoom(idx);
+  }, { passive: false });
+
+  card.addEventListener('click', e => {
+    e.preventDefault();
+    const idx = Number.parseInt(card.dataset.idx, 10);
+    if (!Number.isNaN(idx)) openZoom(idx);
+  });
+
+  card.dataset.zoomBound = '1';
 });
 
 document.querySelectorAll('.tdot').forEach(dot => dot.addEventListener('click', () => applyTheme(dot.dataset.t)));
