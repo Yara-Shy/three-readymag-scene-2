@@ -851,25 +851,7 @@ document.querySelectorAll('#spiral .card .card-hit').forEach(el => el.remove());
 
 document.querySelectorAll('#spiral .card').forEach(card => {
   if (card.dataset.zoomBound === '1') return;
-  let startX = 0;
-  let startY = 0;
-
-  card.addEventListener('pointerdown', e => {
-    if (e.pointerType !== 'touch') return;
-    startX = e.clientX;
-    startY = e.clientY;
-  }, { passive: true });
-
-  card.addEventListener('pointerup', e => {
-    if (e.pointerType !== 'touch') return;
-    const dx = Math.abs(e.clientX - startX);
-    const dy = Math.abs(e.clientY - startY);
-    if (dx > 14 || dy > 14) return; // scroll/drag gesture
-    e.preventDefault();
-    const idx = Number.parseInt(card.dataset.idx, 10);
-    if (!Number.isNaN(idx)) openZoom(idx);
-  }, { passive: false });
-
+  // Desktop/mouse fallback
   card.addEventListener('click', e => {
     e.preventDefault();
     const idx = Number.parseInt(card.dataset.idx, 10);
@@ -878,6 +860,37 @@ document.querySelectorAll('#spiral .card').forEach(card => {
 
   card.dataset.zoomBound = '1';
 });
+
+const spiralTrackEl = document.getElementById('spiralTrack');
+let tapStartX = 0;
+let tapStartY = 0;
+let tapStartAt = 0;
+let tapCard = null;
+
+spiralTrackEl?.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch') return;
+  tapStartX = e.clientX;
+  tapStartY = e.clientY;
+  tapStartAt = performance.now();
+  tapCard = e.target.closest('.card');
+}, { passive: true });
+
+spiralTrackEl?.addEventListener('pointerup', e => {
+  if (e.pointerType !== 'touch') return;
+  if (!tapCard) return;
+  const dx = Math.abs(e.clientX - tapStartX);
+  const dy = Math.abs(e.clientY - tapStartY);
+  const dtMs = performance.now() - tapStartAt;
+  const isTap = dx <= 28 && dy <= 28 && dtMs <= 450;
+  if (!isTap) {
+    tapCard = null;
+    return;
+  }
+  e.preventDefault();
+  const idx = Number.parseInt(tapCard.dataset.idx, 10);
+  if (!Number.isNaN(idx)) openZoom(idx);
+  tapCard = null;
+}, { passive: false });
 
 // TEMP mobile diagnostics: helps identify which layer receives taps.
 if (isMobile) {
