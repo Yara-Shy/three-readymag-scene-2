@@ -873,6 +873,12 @@ document.querySelectorAll('#spiral .card').forEach(card => {
   hit.type = 'button';
   hit.className = 'card-hit';
   hit.setAttribute('aria-label', 'Open project');
+  hit.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    const idx = Number.parseInt(card.dataset.idx, 10);
+    if (!Number.isNaN(idx)) openZoom(idx);
+  });
   card.appendChild(hit);
 });
 
