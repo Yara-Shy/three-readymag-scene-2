@@ -848,6 +848,7 @@ document.addEventListener('keydown', e => {
 });
 let touchStartX = 0, touchStartY = 0;
 let touchActive = false;
+let lastTouchOpenAt = 0;
 
 document.addEventListener('pointerdown', e => {
   if (e.pointerType !== 'touch') return;
@@ -865,13 +866,15 @@ document.addEventListener('pointerup', e => {
   const dy = Math.abs(e.clientY - touchStartY);
   if (dx > 14 || dy > 14) return; // свайп/скрол - не відкриваємо
   e.preventDefault();
+  lastTouchOpenAt = performance.now();
   openZoom(parseInt(card.dataset.idx));
 }, { passive: true });
 
 document.addEventListener('click', e => {
-  if (isMobile) return;
   const card = e.target.closest('.card');
   if (!card) return;
+  // Ignore synthetic click right after touch-open on mobile.
+  if (isMobile && performance.now() - lastTouchOpenAt < 500) return;
   e.preventDefault();
   openZoom(parseInt(card.dataset.idx));
 });
