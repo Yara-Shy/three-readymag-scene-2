@@ -879,6 +879,34 @@ document.querySelectorAll('#spiral .card').forEach(card => {
   card.dataset.zoomBound = '1';
 });
 
+// TEMP mobile diagnostics: helps identify which layer receives taps.
+if (isMobile) {
+  document.addEventListener('pointerup', e => {
+    if (e.pointerType !== 'touch') return;
+    const topStack = document.elementsFromPoint(e.clientX, e.clientY)
+      .slice(0, 6)
+      .map(el => {
+        const id = el.id ? `#${el.id}` : '';
+        const cls = el.className && typeof el.className === 'string'
+          ? `.${el.className.trim().replace(/\s+/g, '.')}`
+          : '';
+        return `${el.tagName}${id}${cls}`;
+      });
+    const t = e.target;
+    const targetName = t
+      ? `${t.tagName}${t.id ? `#${t.id}` : ''}${t.className && typeof t.className === 'string' ? `.${t.className.trim().replace(/\s+/g, '.')}` : ''}`
+      : 'null';
+    console.log('[spiral-tap-debug]', {
+      x: e.clientX,
+      y: e.clientY,
+      target: targetName,
+      nearestCard: !!e.target.closest('.card'),
+      nearestSpiralCard: !!e.target.closest('#spiral .card'),
+      topStack,
+    });
+  }, { passive: true });
+}
+
 document.querySelectorAll('.tdot').forEach(dot => dot.addEventListener('click', () => applyTheme(dot.dataset.t)));
 
 const sections  = ['s-home','s-work','s-about','s-contact'].map(id => document.getElementById(id));
