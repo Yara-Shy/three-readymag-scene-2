@@ -243,6 +243,20 @@ nav * { pointer-events: all; }
 .card::before {
   display: none;
 }
+.card-hit {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  height: min(34%, 120px);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  z-index: 9;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
 
 .meta {
   position: absolute; inset: 0;
@@ -301,6 +315,12 @@ nav * { pointer-events: all; }
   .meta .desc { font-size: .70rem; line-height: 1 ; margin-top: .1rem;  }
   .meta .cta-link { font-size: 3rem; margin-top: .1rem; padding: .2rem .3rem; }
   .meta-tag { font-size: .49rem; padding: .15rem .4rem; }
+  .card-hit {
+    left: .7rem;
+    right: .7rem;
+    bottom: .7rem;
+    height: min(40%, 130px);
+  }
 }
 
 
