@@ -356,7 +356,6 @@ function updateScrollState() {
   scrollState.spiralDone = spiralRect.bottom <= 0 || scrollState.spiralP >= .99;
 }
 
-window.addEventListener('scroll', updateScrollState, { passive: true });
 window.addEventListener('resize', () => updateStableViewportHeight(false), { passive: true });
 window.addEventListener('orientationchange', () => updateStableViewportHeight(true), { passive: true });
 
@@ -403,8 +402,8 @@ function computeCameraTarget() {
   camTargetZ = CAM.FAR_Z + (CAM.NEAR_Z - CAM.FAR_Z) * e;
   camTargetX = -6 * e;
 
-  const showAt = 0.60;
-  const hideAt = 0.52;
+  const showAt = 0.62;
+  const hideAt = 0.48;
   const shouldShowHero = heroRevealed ? wrapP >= hideAt : wrapP >= showAt;
 
 if (shouldShowHero !== heroRevealed) {
@@ -415,7 +414,7 @@ if (shouldShowHero !== heroRevealed) {
   document.getElementById('theme-dots')?.classList.toggle('show', shouldShowHero);
   document.querySelectorAll('.hero-reveal').forEach(el => el.classList.toggle('show', shouldShowHero));
 
-  if (!isMobile && shouldShowHero && !explosionFired && (clock.getElapsedTime() - lastExplosionAt > 1.2)) {
+  if (shouldShowHero && !explosionFired && (clock.getElapsedTime() - lastExplosionAt > 1.2)) {
     explosionFired = true;
     isExploding    = true;
     explodeStart   = clock.getElapsedTime();
@@ -436,7 +435,6 @@ if (shouldShowHero !== heroRevealed) {
     camTargetZ = lerp(CAM.NEAR_Z, CAM.SPIRAL_Z, preZoomE);
   }
 }
-window.addEventListener('scroll', computeCameraTarget, { passive: true });
 
 
 
@@ -593,21 +591,16 @@ const scale = baseScale * smoothHover[i];
   controls.target.x = lerpDt(controls.target.x, camCurrentX, 0.05, dt);
 
   /* ── Explode  ── */
-  if (!isMobile) {
-    if (isExploding) {
-      const p = Math.min((t - explodeStart) * 1_000 / CFG.explode.duration, 1);
-      const e = easeInOut(p);
-      rings.children.forEach(r => r.material.uniforms.uExplode.value = e);
-      if (p >= 1) isExploding = false;
-    } else {
-      rings.children.forEach(r => {
-        const cur = r.material.uniforms.uExplode.value;
-        r.material.uniforms.uExplode.value = cur > .002 ? cur * .94 : 0;
-      });
-    }
+  if (isExploding) {
+    const p = Math.min((t - explodeStart) * 1_000 / CFG.explode.duration, 1);
+    const e = easeInOut(p);
+    rings.children.forEach(r => r.material.uniforms.uExplode.value = e);
+    if (p >= 1) isExploding = false;
   } else {
-    isExploding = false;
-    rings.children.forEach(r => { r.material.uniforms.uExplode.value = 0; });
+    rings.children.forEach(r => {
+      const cur = r.material.uniforms.uExplode.value;
+      r.material.uniforms.uExplode.value = cur > .002 ? cur * .94 : 0;
+    });
   }
 
   /* ── Sphere scale + alpha  ── */
