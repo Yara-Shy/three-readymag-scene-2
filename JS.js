@@ -98,8 +98,6 @@ const loaderTick = setInterval(() => {
       // Кешуємо rect'и після того як loader зник
       cacheRect(document.getElementById('s-home-wrapper'));
       cacheRect(document.getElementById('spiral'));
-      updateSectionMetrics();
-      updateScrollState();
     }, 400);
   }
 }, 55);
@@ -326,12 +324,6 @@ const scrollState = {
   spiralDone: false,
   scrollY:    0,
 };
-const sectionMetrics = {
-  wrapTop: 0,
-  wrapHeight: 1,
-  spiralTop: 0,
-  spiralHeight: 1,
-};
 let stableVh = window.innerHeight;
 
 function updateStableViewportHeight(force = false) {
@@ -341,53 +333,32 @@ function updateStableViewportHeight(force = false) {
   if (force || Math.abs(next - stableVh) > 120) stableVh = next;
 }
 
-function updateSectionMetrics() {
-  const wrap = document.getElementById('s-home-wrapper');
-  const spiral = document.getElementById('spiral');
-  if (!wrap || !spiral) return;
-  sectionMetrics.wrapTop = wrap.offsetTop;
-  sectionMetrics.wrapHeight = wrap.offsetHeight;
-  sectionMetrics.spiralTop = spiral.offsetTop;
-  sectionMetrics.spiralHeight = spiral.offsetHeight;
-}
-
 function updateScrollState() {
   const vh = stableVh;
   scrollState.scrollY = window.scrollY;
-  const wrapScroll = sectionMetrics.wrapHeight - vh;
-  const wrapLocalY = scrollState.scrollY - sectionMetrics.wrapTop;
+
+  const wrapRect   = getCachedRect(document.getElementById('s-home-wrapper'));
+  const wrapScroll = wrapRect.height - vh;
   scrollState.wrapP = wrapScroll > 0
-    ? Math.max(0, Math.min(1, wrapLocalY / wrapScroll))
+    ? Math.max(0, Math.min(1, -wrapRect.top / wrapScroll))
     : 0;
 
-  const spiralScroll = sectionMetrics.spiralHeight - vh;
-  const spiralLocalY = scrollState.scrollY - sectionMetrics.spiralTop;
+  const spiralRect   = getCachedRect(document.getElementById('spiral'));
+  const spiralScroll = spiralRect.height - vh;
   scrollState.spiralP = spiralScroll > 0
-    ? Math.max(0, Math.min(1, spiralLocalY / spiralScroll))
+    ? Math.max(0, Math.min(1, -spiralRect.top / spiralScroll))
     : 0;
 
-  const spiralTopInViewport = sectionMetrics.spiralTop - scrollState.scrollY;
-  const spiralBottomInViewport = spiralTopInViewport + sectionMetrics.spiralHeight;
-  scrollState.spiralIn = spiralTopInViewport < vh
-    && spiralBottomInViewport > 0
+  scrollState.spiralIn = spiralRect.top < vh
+    && spiralRect.bottom > 0
     && scrollState.spiralP > .01
     && scrollState.spiralP < .99;
-  scrollState.spiralDone = spiralBottomInViewport <= 0 || scrollState.spiralP >= .99;
+  scrollState.spiralDone = spiralRect.bottom <= 0 || scrollState.spiralP >= .99;
 }
 
 window.addEventListener('scroll', updateScrollState, { passive: true });
-window.addEventListener('resize', () => {
-  updateStableViewportHeight(false);
-  updateSectionMetrics();
-  updateScrollState();
-}, { passive: true });
-window.addEventListener('orientationchange', () => {
-  updateStableViewportHeight(true);
-  updateSectionMetrics();
-  updateScrollState();
-}, { passive: true });
-updateSectionMetrics();
-updateScrollState();
+window.addEventListener('resize', () => updateStableViewportHeight(false), { passive: true });
+window.addEventListener('orientationchange', () => updateStableViewportHeight(true), { passive: true });
 
 
 /* ─────────────────────────────────────────────
@@ -398,6 +369,7 @@ let camCurrentZ = CAM.FAR_Z;
 let camTargetX  = 0;
 let camCurrentX = 0;
 let scrollCueGone = false, heroRevealed = false, explosionFired = false;
+let lastExplosionAt = -10;
 // heroRevealed тепер реактивний — відображає поточний стан, а не "чи спрацював колись"
 let sphereAlphaSmooth = 1;
 
@@ -442,10 +414,11 @@ if (shouldShowHero !== heroRevealed) {
   document.getElementById('theme-dots')?.classList.toggle('show', shouldShowHero);
   document.querySelectorAll('.hero-reveal').forEach(el => el.classList.toggle('show', shouldShowHero));
 
-  if (shouldShowHero && !explosionFired) {
+  if (shouldShowHero && !explosionFired && (clock.getElapsedTime() - lastExplosionAt > 1.2)) {
     explosionFired = true;
     isExploding    = true;
     explodeStart   = clock.getElapsedTime();
+    lastExplosionAt = explodeStart;
   }
 
   // При поверненні вгору — скидаємо explosionFired,
@@ -462,6 +435,7 @@ if (shouldShowHero !== heroRevealed) {
     camTargetZ = lerp(CAM.NEAR_Z, CAM.SPIRAL_Z, preZoomE);
   }
 }
+window.addEventListener('scroll', computeCameraTarget, { passive: true });
 
 
 
@@ -620,7 +594,8 @@ const scale = baseScale * smoothHover[i];
   /* ── Explode  ── */
   if (isExploding) {
     const p = Math.min((t - explodeStart) * 1_000 / CFG.explode.duration, 1);
-    const e = easeInOut(Math.sin(p * Math.PI));
+    // Monotonic explosion curve avoids reverse "kick" on mobile.
+    const e = easeInOut(p);
     rings.children.forEach(r => r.material.uniforms.uExplode.value = e);
     if (p >= 1) isExploding = false;
   } else {
