@@ -847,21 +847,10 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeZoom();
 });
 
-document.querySelectorAll('#spiral .card').forEach(card => {
-  let hit = card.querySelector('.card-hit');
-  if (!hit) {
-    hit = document.createElement('div');
-    hit.className = 'card-hit';
-    hit.setAttribute('role', 'button');
-    hit.setAttribute('aria-label', 'Open project');
-    card.appendChild(hit);
-  }
-});
+document.querySelectorAll('#spiral .card .card-hit').forEach(el => el.remove());
 
 document.getElementById('spiralTrack')?.addEventListener('click', e => {
-  const trigger = e.target.closest('.card-hit, .meta h3, .meta .cta-link, .card');
-  if (!trigger) return;
-  const card = trigger.closest('.card');
+  const card = e.target.closest('.card');
   if (!card) return;
   e.preventDefault();
   const idx = Number.parseInt(card.dataset.idx, 10);
