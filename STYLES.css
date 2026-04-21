@@ -271,11 +271,28 @@ nav * { pointer-events: all; }
 .meta .cta-link { font-size: 3rem; color: var(--c2); flex-shrink: 0;  margin-right: 1rem; transform: translateY(1rem);  }
 .meta .desc { margin-left: .2rem; font-size: .8rem; line-height: 1.75;  margin-top: .1rem; color: rgba(255,255,255,.45);  }
 @media (max-width: 768px) {
+  #s-home {
+    padding-left: 1.4rem;
+    padding-right: 1.4rem;
+  }
+  .hero-left {
+    width: 100%;
+    max-width: calc(100vw - 2.8rem);
+  }
   .hero-name {
   font-family: "pacaembu", sans-serif;
-  font-size: clamp(4.5rem, 7vw, 7rem);
+  font-size: clamp(2.4rem, 12vw, 4.2rem);
   font-weight: 700; line-height: .85; letter-spacing: .04em;
-  margin-bottom: 2rem;  
+  margin-bottom: 1.2rem;
+  overflow-wrap: anywhere;
+}
+  .hero-sub {
+    max-width: 100%;
+    line-height: 1.7;
+    word-break: break-word;
+  }
+  .cta-row {
+    flex-wrap: wrap;
 }
   .meta { left: 0; right: 0; bottom: 0; top: 0; gap: .3rem; padding: 2rem 1rem 1rem; background: linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.75) 30%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.4) 100%); }
   .meta h3 { font-size: clamp(1.6rem, 4vw, 1.3rem); }
