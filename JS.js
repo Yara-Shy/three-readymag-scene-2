@@ -435,7 +435,7 @@ const spiral = (() => {
   const N = cards.length;
   const isMob = window.innerWidth <= 768;
   const S = {
-    R: isMob ? 280 : 640, pitch: isMob ? 250 : 320, zOffset: isMob ? -160 : -260, faceStrength: isMob ? 32 : 48, tiltX: 0,
+    R: isMob ? 320 : 640, pitch: isMob ? 200 : 320, zOffset: isMob ? -160 : -260, faceStrength: isMob ? 32 : 48, tiltX: 0,
     backBlurMax: 12, backOpacityMin: 0.22, frontOpacityMin: 0.98,
     backThreshold: 0, cameraLerp: 0.1, focusSharpness: 12.0, scrollLerp: 0.08,
   };
@@ -526,7 +526,8 @@ const scale = baseScale * smoothHover[i];
         cards[i].style.filter       = filt;
         cards[i].style.opacity      = opacity.toFixed(3);
         cards[i].style.zIndex       = zIdx;
-        cards[i].style.pointerEvents = facing > .4 ? 'auto' : 'none';
+        const canTap = window.innerWidth <= 768 ? facing > .22 : facing > .4;
+        cards[i].style.pointerEvents = canTap ? 'auto' : 'none';
 
         if (photos[i]) {
           photos[i].style.transform = tf;
@@ -820,26 +821,24 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeZoom();
 });
 let touchStartX = 0, touchStartY = 0;
+let touchMoved = false;
 
 document.addEventListener('touchstart', e => {
+  touchMoved = false;
   touchStartX = e.touches[0].clientX;
   touchStartY = e.touches[0].clientY;
 }, { passive: true });
 
 document.addEventListener('touchend', e => {
-  const card = e.target.closest('.card');
-  if (!card) return;
   const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
   const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
-  if (dx > 8 || dy > 8) return; // це був свайп — ігноруємо
-  e.preventDefault();
-  openZoom(parseInt(card.dataset.idx));
-}, { passive: false });
+  touchMoved = dx > 8 || dy > 8;
+}, { passive: true });
 
 document.addEventListener('click', e => {
-  if (isMobile) return; // на мобільному використовуємо тільки touchend
   const card = e.target.closest('.card');
   if (!card) return;
+  if (isMobile && touchMoved) return;
   e.preventDefault();
   openZoom(parseInt(card.dataset.idx));
 });
