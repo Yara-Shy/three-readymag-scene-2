@@ -257,10 +257,6 @@ nav * { pointer-events: all; }
   pointer-events: auto;
   touch-action: pan-y;
 }
-.card.is-front .card-hit {
-  background: rgba(0, 229, 255, 0.14);
-  outline: 1px dashed rgba(0, 229, 255, 0.5);
-}
 
 .meta {
   position: absolute; inset: 0;
