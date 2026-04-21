@@ -415,7 +415,7 @@ if (shouldShowHero !== heroRevealed) {
   document.getElementById('theme-dots')?.classList.toggle('show', shouldShowHero);
   document.querySelectorAll('.hero-reveal').forEach(el => el.classList.toggle('show', shouldShowHero));
 
-  if (shouldShowHero && !explosionFired && (clock.getElapsedTime() - lastExplosionAt > 1.2)) {
+  if (!isMobile && shouldShowHero && !explosionFired && (clock.getElapsedTime() - lastExplosionAt > 1.2)) {
     explosionFired = true;
     isExploding    = true;
     explodeStart   = clock.getElapsedTime();
@@ -593,17 +593,21 @@ const scale = baseScale * smoothHover[i];
   controls.target.x = lerpDt(controls.target.x, camCurrentX, 0.05, dt);
 
   /* ── Explode  ── */
-  if (isExploding) {
-    const p = Math.min((t - explodeStart) * 1_000 / CFG.explode.duration, 1);
-    // Monotonic explosion curve avoids reverse "kick" on mobile.
-    const e = easeInOut(p);
-    rings.children.forEach(r => r.material.uniforms.uExplode.value = e);
-    if (p >= 1) isExploding = false;
+  if (!isMobile) {
+    if (isExploding) {
+      const p = Math.min((t - explodeStart) * 1_000 / CFG.explode.duration, 1);
+      const e = easeInOut(p);
+      rings.children.forEach(r => r.material.uniforms.uExplode.value = e);
+      if (p >= 1) isExploding = false;
+    } else {
+      rings.children.forEach(r => {
+        const cur = r.material.uniforms.uExplode.value;
+        r.material.uniforms.uExplode.value = cur > .002 ? cur * .94 : 0;
+      });
+    }
   } else {
-    rings.children.forEach(r => {
-      const cur = r.material.uniforms.uExplode.value;
-      r.material.uniforms.uExplode.value = cur > .002 ? cur * .94 : 0;
-    });
+    isExploding = false;
+    rings.children.forEach(r => { r.material.uniforms.uExplode.value = 0; });
   }
 
   /* ── Sphere scale + alpha  ── */
