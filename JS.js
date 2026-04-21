@@ -545,7 +545,7 @@ const scale = baseScale * smoothHover[i];
         cards[i].style.filter       = filt;
         cards[i].style.opacity      = opacity.toFixed(3);
         cards[i].style.zIndex       = zIdx;
-        const canTap = window.innerWidth <= 768 ? i === frontIdx : facing > .4;
+        const canTap = window.innerWidth <= 768 ? true : facing > .4;
         cards[i].style.pointerEvents = canTap ? 'auto' : 'none';
 
         if (photos[i]) {
@@ -863,7 +863,6 @@ document.getElementById('spiralTrack')?.addEventListener('click', e => {
   if (!trigger) return;
   const card = trigger.closest('.card');
   if (!card) return;
-  if (isMobile && !card.classList.contains('is-front')) return;
   e.preventDefault();
   const idx = Number.parseInt(card.dataset.idx, 10);
   if (!Number.isNaN(idx)) openZoom(idx);
