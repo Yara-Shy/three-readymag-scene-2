@@ -846,6 +846,15 @@ document.addEventListener('keydown', e => {
   if (!zoomOverlay.classList.contains('open')) return;
   if (e.key === 'Escape') closeZoom();
 });
+
+function getZoomCardTarget(target) {
+  if (!target) return null;
+  const directCard = target.closest('.card');
+  if (directCard) return directCard;
+  const actionEl = target.closest('.meta h3, .meta .cta-link');
+  return actionEl ? actionEl.closest('.card') : null;
+}
+
 let touchStartX = 0, touchStartY = 0;
 let touchActive = false;
 let lastTouchOpenAt = 0;
@@ -860,23 +869,23 @@ document.addEventListener('pointerdown', e => {
 document.addEventListener('pointerup', e => {
   if (e.pointerType !== 'touch' || !touchActive) return;
   touchActive = false;
-  const card = e.target.closest('.card');
+  const card = getZoomCardTarget(e.target);
   if (!card) return;
   const dx = Math.abs(e.clientX - touchStartX);
   const dy = Math.abs(e.clientY - touchStartY);
   if (dx > 14 || dy > 14) return; // свайп/скрол - не відкриваємо
   e.preventDefault();
   lastTouchOpenAt = performance.now();
-  openZoom(parseInt(card.dataset.idx));
+  openZoom(parseInt(card.dataset.idx, 10));
 }, { passive: false });
 
 document.addEventListener('click', e => {
-  const card = e.target.closest('.card');
+  const card = getZoomCardTarget(e.target);
   if (!card) return;
   // Ignore synthetic click right after touch-open on mobile.
   if (isMobile && performance.now() - lastTouchOpenAt < 500) return;
   e.preventDefault();
-  openZoom(parseInt(card.dataset.idx));
+  openZoom(parseInt(card.dataset.idx, 10));
 });
 
 document.querySelectorAll('.tdot').forEach(dot => dot.addEventListener('click', () => applyTheme(dot.dataset.t)));
